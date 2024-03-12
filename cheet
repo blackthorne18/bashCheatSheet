@@ -1,0 +1,54 @@
+#!/usr/bin/python3
+import sys
+import os
+
+
+INFILE= os.path.join(os.path.dirname(__file__), "./cheatsheet.md")
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+    PURPLE = '\033[35m'
+
+
+def formatme(instring):
+    instring = [x.strip().split("\n") for x in instring]
+    for i in range(len(instring)):
+        instring[i][0] = bcolors.OKGREEN + instring[i][0] + bcolors.ENDC
+        for x in range(1,len(instring[i])):
+            if ">" == instring[i][x][0]:
+                instring[i][x] = "\t" + bcolors.UNDERLINE + instring[i][x][1:] + bcolors.ENDC
+    instring = "\n".join(["\n".join(x) for x in instring])
+    leaders = bcolors.OKCYAN + ("-" * 50) + bcolors.ENDC
+    instring = leaders + "\n" + instring + "\n" + leaders
+    return instring
+
+
+def main():
+    search_term=" ".join(sys.argv[1:])
+    with open(INFILE, 'r') as f:
+        cheet_temp=f.read().split("\n")
+        cheet_temp=[x for x in cheet_temp if len(x) > 0]
+    cheet = []
+    for x in range(len(cheet_temp)):
+        if cheet_temp[x][0] == "#":
+            cheet.append([])
+        cheet[-1].append(cheet_temp[x])
+    cheet = ["\n".join(xy) for xy in cheet]
+    show = [x for x in cheet if search_term in x]
+    show = formatme(show)
+    print(show)
+
+
+if __name__ == "__main__":
+    if len(sys.argv) > 1:
+        main()
+
+
+
