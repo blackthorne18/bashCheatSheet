@@ -1,9 +1,11 @@
 #!/usr/bin/python3
 import sys
 import os
+import re
 
-
+# Where is the input cheatsheet file stored? Gets the absolute path
 INFILE= os.path.join(os.path.dirname(__file__), "./cheatsheet.md")
+# Variables for printing the output in color in a unix terminal
 class bcolors:
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
@@ -16,15 +18,19 @@ class bcolors:
     UNDERLINE = '\033[4m'
     PURPLE = '\033[35m'
 
-
+# Formatting the output in a nice format with a '-'ed header and footer
 def formatme(instring):
     instring = [x.strip().split("\n") for x in instring]
     for i in range(len(instring)):
+        # The first line is given the OKGREEN color
         instring[i][0] = bcolors.OKGREEN + instring[i][0] + bcolors.ENDC
+        # If lines contains a ">" i.e. code, they are underlined to highlight
         for x in range(1,len(instring[i])):
             if ">" == instring[i][x][0]:
                 instring[i][x] = "\t" + bcolors.UNDERLINE + instring[i][x][1:] + bcolors.ENDC
+    # Joins them back into strings, from lists
     instring = "\n".join(["\n".join(x) for x in instring])
+    # Adds a header and footer of dashed lines in color
     leaders = bcolors.OKCYAN + ("-" * 50) + bcolors.ENDC
     instring = leaders + "\n" + instring + "\n" + leaders
     return instring
@@ -32,16 +38,24 @@ def formatme(instring):
 
 def main():
     search_term=" ".join(sys.argv[1:])
+    # Read the cheet sheet file and parse into an easy to work with format
     with open(INFILE, 'r') as f:
         cheet_temp=f.read().split("\n")
         cheet_temp=[x for x in cheet_temp if len(x) > 0]
     cheet = []
+    # Entries in the cheatsheet file are split based on the "#"
     for x in range(len(cheet_temp)):
         if cheet_temp[x][0] == "#":
             cheet.append([])
         cheet[-1].append(cheet_temp[x])
+    # Rejoing the list into a string to search for our term
     cheet = ["\n".join(xy) for xy in cheet]
-    show = [x for x in cheet if search_term in x]
+    show = {}
+    for item in cheet:
+        search_result = re.search(search_term, item, re.IGNORECASE)
+        if search_result:
+            show[item] = search_result.start()
+    show = dict(sorted(show.items(), key=lambda item: item[1]))
     show = formatme(show)
     print(show)
 

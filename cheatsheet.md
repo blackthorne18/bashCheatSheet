@@ -33,3 +33,16 @@ Delete shortest pattern match from end
 > ${VAR%pattern}  
 Delete longest pattern match from end
 > ${VAR%%pattern} 
+# Letter rotation ciphers in linux
+For example, to decode or encode rot13
+> tr 'A-Za-z' 'N-ZA-Mn-za-m' < data.txt
+# Sending message to a server
+> echo "message" | nc localhost 2000
+# Remove non-printable characters from a variable in bash
+> tr -dc '[[:print:]]' <<< "$var"
+# Making a QR Code
+> qrencode -o output.svg -t SVG -d 160 input-data
+# Sorting file contents
+> sort -k1 -n -t, filename.csv
+`-k1` sorts by column 1, `-n` sorts numerically instead of lexicographically,
+-t, sets the delimiter
